@@ -124,7 +124,7 @@ begin
 	
 	
 	-- (!) ?nderung der originalen EnPWMClock (jetzt: ENPWMClock2), da die nun
-	-- langsamere Frequenz f¨¹r eine stabilere Bluetooth-Verbindung sorgt
+	-- langsamere Frequenz fÂ¨Â¹r eine stabilere Bluetooth-Verbindung sorgt
 	  EnPWMClockOld<=FreqChangeCounter(11);
       if (EnPWMClockOld='0') and (FreqChangeCounter(11)='1') then
         EnPWMClock<='1';

@@ -15,7 +15,7 @@ entity AshaRegelung is
     EnClockTemp  : in std_logic; 							   --! Enable-Signal fuer die Temperaturregelung
     SensordataLight   : in std_logic_vector(11 downto 0); 			--! Aktuelle Lichtwerte
     SensordataTempIn  : in std_logic_vector(11 downto 0); 			--! Aktuelle Innentemperatur
-	 SensordataTempOut : in std_logic_vector(11 downto 0);   		--! Aktuelle Außentemperatur
+	 SensordataTempOut : in std_logic_vector(11 downto 0);   		--! Aktuelle AuÃentemperatur
 	 PWM1FanInsideValueControl  : out std_logic_vector(7 downto 0); 	--! PWM-Wert innerere Luefter
     PWM2FanOutsideValueControl : out std_logic_vector(7 downto 0);   --! PWM-Wert aeusserer Luefter
     PWM3LightValueControl   : out std_logic_vector(7 downto 0); 	   --! PWM-Wert Licht
@@ -39,7 +39,7 @@ end process lightControl;
 
 -- Versuch 9: Realisierung der Temperatursteuerung
 -- Ziel: Innen zwei Grad waermer als draussen
--- 2�C entsprechen einem Wert von ca. 15;
+-- 2°C entsprechen einem Wert von ca. 15;
 -- um schnelles Umschalten zu verhindern, wird ein Toleranzbereich genommen
 tempControl: process (EnClockTemp)
 begin

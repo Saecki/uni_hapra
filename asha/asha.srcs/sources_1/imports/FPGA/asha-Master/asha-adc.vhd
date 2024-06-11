@@ -134,10 +134,10 @@ begin
           if ADCTranslationReady='1' then
             TranslateValue<='0';
             ADCRegister(to_integer(ADCNumber))<=ADCLinearData;
---            if ADCNumber=x"0" then -- Innentemperatur, für die Regelung (Direktzugriff)
+--            if ADCNumber=x"0" then -- Innentemperatur, fÃ¼r die Regelung (Direktzugriff)
 --              ReglerTempIst<=to_integer(unsigned(ADCLinearData));
 --              -- DEBUG_DATA<=ADCLinearData;
---            elsif ADCNumber=x"3" then -- Lichtsensor, für die Regelung (Direktzugriff)
+--            elsif ADCNumber=x"3" then -- Lichtsensor, fÃ¼r die Regelung (Direktzugriff)
 --              ReglerLichtIst<=to_integer(unsigned(ADCLinearData));
 --            --elsif ADCNumber=x"1" then
 --            --  DEBUG_DATA<="0000" & ADCLinearData;
@@ -172,7 +172,7 @@ begin
   -- 1023 ueber die Grenzwerte 0=0, 3,3=4095 richtig
   -- errechnen kann.
   --
-  Process (Clock) -- ADC Linearisierung: Uebersetzt die Daten nichtlinearer Sensoren in ein lineares Verhältnis
+  Process (Clock) -- ADC Linearisierung: Uebersetzt die Daten nichtlinearer Sensoren in ein lineares VerhÃ¤ltnis
   begin
     if rising_edge(Clock) then
       if TranslateValue='0' then -- Reset
@@ -264,7 +264,7 @@ begin
               end if;
             when b11 =>
               ADCSend<='Z'; -- brauchen wir nicht mehr. 
-              -- Hier k�nnten wir ADCSend auch auf einen festen 1- oder 0-Wert setzen, da der ADC das Signal ab jetzt eh ignoriert, 
+              -- Hier könnten wir ADCSend auch auf einen festen 1- oder 0-Wert setzen, da der ADC das Signal ab jetzt eh ignoriert, 
               -- aber immerhin handelt es sich ja hier offiziell um einen SPI-Bus...
               ADCData(11)<=ADCReceive;
               ADCState<=b10;
@@ -304,7 +304,7 @@ begin
               ADCChipSelect<='1';
               ADCState<=endb;
             when others => 
-              null; -- Am Ende warten wir einfach ab. Der Startzustand wird beim nächsten Auftreten von "ADCGetValue" erneut gesetzt.
+              null; -- Am Ende warten wir einfach ab. Der Startzustand wird beim nÃ¤chsten Auftreten von "ADCGetValue" erneut gesetzt.
           end case;
         elsif ADCClockIn='0' and ADCClockOld='1' then -- also: falling_edge(ADCClock)
           case ADCState is

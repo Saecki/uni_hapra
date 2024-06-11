@@ -1,35 +1,5 @@
-----------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
--- Create Date: 09.06.2024 13:21:55
--- Design Name: 
--- Module Name: TestbenchPWM - Behavioral
--- Project Name: 
--- Target Devices: 
--- Tool Versions: 
--- Description: 
--- 
--- Dependencies: 
--- 
--- Revision:
--- Revision 0.01 - File Created
--- Additional Comments:
--- 
-----------------------------------------------------------------------------------
-
-
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
-
--- Uncomment the following library declaration if instantiating
--- any Xilinx leaf cells in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
 
 entity TestbenchPWM is
 --  Port ( );
@@ -42,11 +12,11 @@ architecture Behavioral of TestbenchPWM is
             PWM1FanInsideValue, PWM2FanOutsideValue, PWM3LightValue, PWM4PeltierValue: in std_logic_vector(7 downto 0);
             PWM1FanInsideSignal, PWM2FanOutsideSignal, PWM3LightSignal, PWM4PeltierSignal: out std_logic);
     end component;
-    
+
     signal Clock, Reset, EnPWMClock: std_logic;
     signal PWM1FanInsideSignal, PWM2FanOutsideSignal, PWM3LightSignal, PWM4PeltierSignal: std_logic;
     signal PWM1FanInsideValue, PWM2FanOutsideValue, PWM3LightValue, PWM4PeltierValue: std_logic_vector(7 downto 0);
-    
+
 begin
     UUT: AshaPWM port map (
         Clock => Clock,
@@ -71,7 +41,7 @@ begin
             wait for 500 ps;
         end loop;
     end process;
-    
+
     -- Clock mit MHz
     enClk: process begin
         while true loop
@@ -81,7 +51,7 @@ begin
             wait for 1 ns;
         end loop;
     end process;
-    
+
     stim_proc: process begin
         --PWM1 mit voll
         PWM1FanInsideValue <= "11111111";
@@ -93,6 +63,6 @@ begin
         PWM4PeltierValue <= "01000000";
         wait;
     end process;
-    
+
     Reset <= '0';
 end Behavioral;
