@@ -1,0 +1,9 @@
+file_list:
+  - "asha.srcs/sources_1/imports/**/*.vhd"
+  - "asha.srcs/sim_1/**/*.vhd"
+
+rule:
+  global:
+    indent_style: spaces
+    indent_size: 4
+    case: PascalCase
