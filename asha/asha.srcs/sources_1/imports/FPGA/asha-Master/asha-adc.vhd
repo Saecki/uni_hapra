@@ -277,7 +277,6 @@ begin
             ADCClockOld <= ADCClockIn;                          -- beides nur einen Takt unterschiedlich
 
             -- jeden Takt zuruecksetzen:
-
             if (ADCGetValue='0') then                           -- Reset
                 -- ADC_ADDR<="000"; wird woanders angelegt
                 EnADCClock    <= '0';                           -- wenn wir den ADC nicht brauchen, brauchen wir auch kein ADCClock
@@ -424,4 +423,3 @@ begin
     end Process;
 
 end architecture Behavioral;
-

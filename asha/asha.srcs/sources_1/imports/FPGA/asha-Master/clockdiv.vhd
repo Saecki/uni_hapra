@@ -136,4 +136,3 @@ begin
     end Process clockdivider;
 
 end architecture Behavioral;
-

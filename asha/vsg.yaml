@@ -7,3 +7,6 @@ rule:
     indent_style: spaces
     indent_size: 4
     case: PascalCase
+
+  type_010:
+    style: allow_comment

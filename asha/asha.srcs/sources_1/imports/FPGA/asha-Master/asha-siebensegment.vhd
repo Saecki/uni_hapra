@@ -28,7 +28,6 @@ architecture Behavioral of AshaSiebensegment is
 
     -- Ziffer nach SevenSegment Konvertierung
     -- Die Eingaenge der Siegensegmentanzeige sind low-active
-
     type SevenSegmentset_type is array (0 to 15) of std_logic_vector(7 downto 0);
 
     -- 7-Segment Anzeige Anordnung
@@ -98,5 +97,3 @@ begin
     end Process SetSevenSegment;
 
 end architecture Behavioral;
-
-
