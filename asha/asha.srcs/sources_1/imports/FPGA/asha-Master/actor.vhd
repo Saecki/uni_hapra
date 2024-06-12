@@ -168,6 +168,88 @@ begin
     --             12 Bit ADC-Sensorwert für Temp. (innen):  ADCRegister(0),
     -- > In Versuch 6-10 zu implementieren!-
     FSM_comb : process (current_s, current_m, ButtonsIn(2), ADCRegister, SensorVibe, SensorDoor) is
+
+        procedure ReadSensors is
+        begin
+
+            case current_s is
+
+                -- init ist der Basiszustand. von hier kannn man button 2 drücken, um den nächsten Zustand vorzumerken.
+                -- Lässt man den Button los wechselt man in den nächsten Zustand. Analog dazu sind die weitern Zustände programmiert
+                when Init =>
+
+                    LEDsOut                        <= b"100000";
+                    SevenSegmentValue(11 downto 0) <= x"FFF";
+
+                    if (ButtonsIn(2) = '1') then
+                        button_s <= Light;
+                    else
+                        button_s <= Init;
+                    end if;
+
+                when Light =>
+
+                    LEDsOut <= b"010000";
+                    -- Hier müssen die relevanten Sensordaten auf das SevenSegment geschrieben
+                    SevenSegmentValue(11 downto 0) <= ADCRegister(3);
+
+                    if (ButtonsIn(2) = '1') then
+                        button_s <= TempIn;
+                    else
+                        button_s <= Light;
+                    end if;
+
+                when TempIn =>
+
+                    LEDsOut                        <= b"001000";
+                    SevenSegmentValue(11 downto 0) <= ADCRegister(0);
+
+                    if (ButtonsIn(2) = '1') then
+                        button_s <= TempOut;
+                    else
+                        button_s <= TempIn;
+                    end if;
+
+                when TempOut =>
+
+                    LEDsOut                        <= b"000100";
+                    SevenSegmentValue(11 downto 0) <= ADCRegister(1);
+
+                    if (ButtonsIn(2) = '1') then
+                        button_s <= Vibe;
+                    else
+                        button_s <= TempOut;
+                    end if;
+
+                when Vibe =>
+
+                    LEDsOut                        <= b"000010";
+                    SevenSegmentValue(11 downto 1) <= b"00000000000";
+                    SevenSegmentValue(0)           <= SensorVibe;
+
+                    if (ButtonsIn(2) = '1') then
+                        button_s <= Door;
+                    else
+                        button_s <= Vibe;
+                    end if;
+
+                when Door =>
+
+                    LEDsOut                         <= b"000001";
+                    SevenSegmentValue(15 downto 12) <= x"E";
+                    SevenSegmentValue(11 downto 1)  <= b"00000000000";
+                    SevenSegmentValue(0)            <= SensorDoor;
+
+                    if (ButtonsIn(2) = '1') then
+                        button_s <= Light;
+                    else
+                        button_s <= Door;
+                    end if;
+
+            end case;
+
+        end procedure ReadSensors;
+
     begin
 
         if (ButtonsIn(2) = '0') then
@@ -186,82 +268,7 @@ begin
             when SensorRead =>
 
                 SevenSegmentValue(15 downto 12) <= x"A";
-
-                case current_s is
-
-                    -- init ist der Basiszustand. von hier kannn man button 2 drücken, um den nächsten Zustand vorzumerken.
-                    -- Lässt man den Button los wechselt man in den nächsten Zustand. Analog dazu sind die weitern Zustände programmiert
-                    when Init =>
-
-                        LEDsOut                        <= b"100000";
-                        SevenSegmentValue(11 downto 0) <= x"FFF";
-
-                        if (ButtonsIn(2) = '1') then
-                            button_s <= Light;
-                        else
-                            button_s <= Init;
-                        end if;
-
-                    when Light =>
-
-                        LEDsOut <= b"010000";
-                        -- Hier müssen die relevanten Sensordaten auf das SevenSegment geschrieben
-                        SevenSegmentValue(11 downto 0) <= ADCRegister(3);
-
-                        if (ButtonsIn(2) = '1') then
-                            button_s <= TempIn;
-                        else
-                            button_s <= Light;
-                        end if;
-
-                    when TempIn =>
-
-                        LEDsOut                        <= b"001000";
-                        SevenSegmentValue(11 downto 0) <= ADCRegister(0);
-
-                        if (ButtonsIn(2) = '1') then
-                            button_s <= TempOut;
-                        else
-                            button_s <= TempIn;
-                        end if;
-
-                    when TempOut =>
-
-                        LEDsOut                        <= b"000100";
-                        SevenSegmentValue(11 downto 0) <= ADCRegister(1);
-
-                        if (ButtonsIn(2) = '1') then
-                            button_s <= Vibe;
-                        else
-                            button_s <= TempOut;
-                        end if;
-
-                    when Vibe =>
-
-                        LEDsOut                        <= b"000010";
-                        SevenSegmentValue(11 downto 1) <= b"00000000000";
-                        SevenSegmentValue(0)           <= SensorVibe;
-
-                        if (ButtonsIn(2) = '1') then
-                            button_s <= Door;
-                        else
-                            button_s <= Vibe;
-                        end if;
-
-                    when Door =>
-
-                        LEDsOut                         <= b"000001";
-                        SevenSegmentValue(15 downto 12) <= x"E";
-                        SevenSegmentValue(11 downto 1)  <= b"00000000000";
-                        SevenSegmentValue(0)            <= SensorDoor;
-
-                        if (ButtonsIn(2) = '1') then
-                            button_s <= Light;
-                        else
-                            button_s <= Door;
-                        end if;
-
-                end case;
+                ReadSensors;
 
             -- Versuch 7
             -- Modus 2: Manuelle Aktorsteuerung
@@ -270,39 +277,32 @@ begin
             when ManualActor =>
 
                 SevenSegmentValue(15 downto 12) <= x"B";
+                ReadSensors;
 
                 if (Switches(0) = '1') then
-                    PWM1FanInsideValue              <= x"FF";
-                    SevenSegmentValue(11 downto 10) <= x"1";
+                    PWM1FanInsideValue <= x"FF";
                 else
-                    PWM1FanInsideValue              <= x"00";
-                    SevenSegmentValue(11 downto 10) <= x"0";
+                    PWM1FanInsideValue <= x"00";
                 end if;
 
                 if (Switches(1) = '1') then
-                    PWM2FanOutsideValue           <= x"FF";
-                    SevenSegmentValue(9 downto 8) <= x"1";
+                    PWM2FanOutsideValue <= x"FF";
                 else
-                    PWM2FanOutsideValue           <= x"00";
-                    SevenSegmentValue(9 downto 8) <= x"0";
+                    PWM2FanOutsideValue <= x"00";
                 end if;
 
                 if (Switches(2) = '1') then
-                    PWM3LightValue                <= x"FF";
-                    SevenSegmentValue(7 downto 4) <= x"1";
+                    PWM3LightValue <= x"FF";
                 else
-                    PWM3LightValue                <= x"00";
-                    SevenSegmentValue(7 downto 4) <= x"0";
+                    PWM3LightValue <= x"00";
                 end if;
 
                 PeltierDirection <= '1';
 
                 if (Switches(3) = '1') then
-                    PWM4PeltierValue              <= x"FF";
-                    SevenSegmentValue(3 downto 0) <= x"1";
+                    PWM4PeltierValue <= x"FF";
                 else
-                    PWM4PeltierValue              <= x"00";
-                    SevenSegmentValue(3 downto 0) <= x"0";
+                    PWM4PeltierValue <= x"00";
                 end if;
 
             -- Versuch 9
