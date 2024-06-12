@@ -55,7 +55,6 @@ architecture Behavioral of actor is
     -- current and next state declaration.
     signal current_m : state_typeM := Asha;
     signal next_m    : state_typeM := Asha;
-    signal button_m  : state_typeM := Asha;
 
     -- Zustandsautomat für Sensor Zustaende.
     -- type of state machine(S for Sensor).
@@ -71,7 +70,6 @@ architecture Behavioral of actor is
     -- current and next state declaration.
     signal current_s : state_typeS := Init;
     signal next_s    : state_typeS := Init;
-    signal button_s  : state_typeS := Init;
 
 begin
 
@@ -84,8 +82,15 @@ begin
             current_s <= Init;
             current_m <= Asha;
         elsif rising_edge(Clock) then
-            current_s <= next_s;
-            current_m <= next_m;
+
+            if (ButtonsIn(0) = '0' and ButtonsIn(1) = '0') then
+                current_m <= next_m;
+            end if;
+
+            if (ButtonsIn(2) = '0') then
+                current_s <= next_s;
+            end if;
+
         end if;
 
     end process FSM_seq;
@@ -96,66 +101,62 @@ begin
     FSM_modul : process (current_m, ButtonsIn(0), ButtonsIn(1)) is
     begin
 
-        if (ButtonsIn(0) = '0' and ButtonsIn(1) = '0') then
-            next_m <= button_m;
-        end if;
-
         case current_m is
 
             -- Asha 2 ist der Basiszustand des Modus
             when Asha =>
 
                 -- drückt man Button 0, beginnen wir den Vorgang des Zurückschaltens,
-                -- indem in `button_m` der Zustand vorgemerkt wird
+                -- indem in `next_m` der Zustand vorgemerkt wird
                 if (ButtonsIn(0) = '1') then
-                    button_m <= Bluetooth;
+                    next_m <= Bluetooth;
                 -- drückt man Button 0, beginnen wir den Vorgang des Vorwärtsschaltens,
-                -- indem in `button_m` der Zustand vorgemerkt wird
+                -- indem in `next_m` der Zustand vorgemerkt wird
                 elsif (ButtonsIn(1) = '1') then
-                    button_m <= SensorRead;
+                    next_m <= SensorRead;
                 else
-                    button_m <= Asha;
+                    next_m <= Asha;
                 end if;
 
             -- Analog zum Init Zustand "Asha" sind die weiteren Zustände programmiert.
             when SensorRead =>
 
                 if (ButtonsIn(0) = '1') then
-                    button_m <= Asha;
+                    next_m <= Asha;
                 elsif (ButtonsIn(1) = '1') then
-                    button_m <= ManualActor;
+                    next_m <= ManualActor;
                 else
-                    button_m <= SensorRead;
+                    next_m <= SensorRead;
                 end if;
 
             when ManualActor =>
 
                 if (ButtonsIn(0) = '1') then
-                    button_m <= SensorRead;
+                    next_m <= SensorRead;
                 elsif (ButtonsIn(1) = '1') then
-                    button_m <= AutoActor;
+                    next_m <= AutoActor;
                 else
-                    button_m <= ManualActor;
+                    next_m <= ManualActor;
                 end if;
 
             when AutoActor =>
 
                 if (ButtonsIn(0) = '1') then
-                    button_m <= ManualActor;
+                    next_m <= ManualActor;
                 elsif (ButtonsIn(1) = '1') then
-                    button_m <= Bluetooth;
+                    next_m <= Bluetooth;
                 else
-                    button_m <= AutoActor;
+                    next_m <= AutoActor;
                 end if;
 
             when Bluetooth =>
 
                 if (ButtonsIn(0) = '1') then
-                    button_m <= AutoActor;
+                    next_m <= AutoActor;
                 elsif (ButtonsIn(1) = '1') then
-                    button_m <= SensorRead;
+                    next_m <= SensorRead;
                 else
-                    button_m <= Bluetooth;
+                    next_m <= Bluetooth;
                 end if;
 
         end case;
@@ -182,9 +183,9 @@ begin
                     SevenSegmentValue(11 downto 0) <= x"FFF";
 
                     if (ButtonsIn(2) = '1') then
-                        button_s <= Light;
+                        next_s <= Light;
                     else
-                        button_s <= Init;
+                        next_s <= Init;
                     end if;
 
                 when Light =>
@@ -194,9 +195,9 @@ begin
                     SevenSegmentValue(11 downto 0) <= ADCRegister(3);
 
                     if (ButtonsIn(2) = '1') then
-                        button_s <= TempIn;
+                        next_s <= TempIn;
                     else
-                        button_s <= Light;
+                        next_s <= Light;
                     end if;
 
                 when TempIn =>
@@ -204,10 +205,10 @@ begin
                     LEDsOut                        <= b"001000";
                     SevenSegmentValue(11 downto 0) <= ADCRegister(0);
 
-                    if (ButtonsIn(2) = '1') then
-                        button_s <= TempOut;
+                    if ButtonsIn(2) = '1' then
+                        next_s <= TempOut;
                     else
-                        button_s <= TempIn;
+                        next_s <= TempIn;
                     end if;
 
                 when TempOut =>
@@ -216,9 +217,9 @@ begin
                     SevenSegmentValue(11 downto 0) <= ADCRegister(1);
 
                     if (ButtonsIn(2) = '1') then
-                        button_s <= Vibe;
+                        next_s <= Vibe;
                     else
-                        button_s <= TempOut;
+                        next_s <= TempOut;
                     end if;
 
                 when Vibe =>
@@ -228,22 +229,21 @@ begin
                     SevenSegmentValue(0)           <= SensorVibe;
 
                     if (ButtonsIn(2) = '1') then
-                        button_s <= Door;
+                        next_s <= Door;
                     else
-                        button_s <= Vibe;
+                        next_s <= Vibe;
                     end if;
 
                 when Door =>
 
-                    LEDsOut                         <= b"000001";
-                    SevenSegmentValue(15 downto 12) <= x"E";
-                    SevenSegmentValue(11 downto 1)  <= b"00000000000";
-                    SevenSegmentValue(0)            <= SensorDoor;
+                    LEDsOut                        <= b"000001";
+                    SevenSegmentValue(11 downto 1) <= b"00000000000";
+                    SevenSegmentValue(0)           <= SensorDoor;
 
                     if (ButtonsIn(2) = '1') then
-                        button_s <= Light;
+                        next_s <= Light;
                     else
-                        button_s <= Door;
+                        next_s <= Door;
                     end if;
 
             end case;
@@ -251,10 +251,6 @@ begin
         end procedure ReadSensors;
 
     begin
-
-        if (ButtonsIn(2) = '0') then
-            next_s <= button_s;
-        end if;
 
         -- Hier wird der Sensor Zustand abhängig von den Buttons gesetzt
         -- Modus 0: "ASHA" Auf 7 Segment Anzeige
@@ -307,7 +303,7 @@ begin
 
             -- Versuch 9
             -- TODO: Modus 3, geregelte Aktorsteuerung
-            when ManualActor =>
+            when AutoActor =>
 
                 LEDsOut           <= b"000000";
                 SevenSegmentValue <= x"C000";
