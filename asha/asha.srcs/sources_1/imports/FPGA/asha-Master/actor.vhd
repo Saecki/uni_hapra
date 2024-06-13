@@ -82,7 +82,6 @@ begin
             current_s <= Init;
             current_m <= Asha;
         elsif rising_edge(Clock) then
-
             if (ButtonsIn(0) = '0' and ButtonsIn(1) = '0') then
                 current_m <= next_m;
             end if;
@@ -90,7 +89,6 @@ begin
             if (ButtonsIn(2) = '0') then
                 current_s <= next_s;
             end if;
-
         end if;
 
     end process FSM_seq;
@@ -205,7 +203,7 @@ begin
                     LEDsOut                        <= b"001000";
                     SevenSegmentValue(11 downto 0) <= ADCRegister(0);
 
-                    if ButtonsIn(2) = '1' then
+                    if (ButtonsIn(2) = '1') then
                         next_s <= TempOut;
                     else
                         next_s <= TempIn;

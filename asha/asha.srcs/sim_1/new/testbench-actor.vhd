@@ -7,43 +7,43 @@ library work;
 
 entity TestbenchActor is
 --  Port ( );
-end TestbenchActor;
+end entity TestbenchActor;
 
 architecture Behavioral of TestbenchActor is
 
     component actor is
-    Port (
-        Clock               : in    std_logic;
-        Reset               : in    std_logic;
-        Switches            : in    std_logic_vector(3 downto 0);
-        ButtonsIn           : in    std_logic_vector(3 downto 0);
-        SensorVibe          : in    std_logic;
-        SensorDoor          : in    std_logic;
-        ADCRegister         : in    ADCRegisterType;
-        LEDsOut             : out   std_logic_vector(5 downto 0);
-        SevenSegmentValue   : out   std_logic_vector(15 downto 0);
-        PWM1FanInsideValue  : out   std_logic_vector(7 downto 0);
-        PWM2FanOutsideValue : out   std_logic_vector(7 downto 0);
-        PWM3LightValue      : out   std_logic_vector(7 downto 0);
-        PWM4PeltierValue    : out   std_logic_vector(7 downto 0);
-        PeltierDirection    : out   std_logic;
-        -- Bluetooth
-        LEDsBT                : in    std_logic_vector(5 downto 0);
-        SevenSegmentValueBT   : in    std_logic_vector(15 downto 0);
-        PWM1FanInsideValueBT  : in    std_logic_vector(7 downto 0);
-        PWM2FanOutsideValueBT : in    std_logic_vector(7 downto 0);
-        PWM3LightValueBT      : in    std_logic_vector(7 downto 0);
-        PWM4PeltierValueBT    : in    std_logic_vector(7 downto 0);
-        PeltierDirectionBT    : in    std_logic;
-        -- Regelung
-        PWM1FanInsideValueControl  : in    std_logic_vector(7 downto 0);
-        PWM2FanOutsideValueControl : in    std_logic_vector(7 downto 0);
-        PWM3LightValueControl      : in    std_logic_vector(7 downto 0);
-        PWM4PeltierValueControl    : in    std_logic_vector(7 downto 0);
-        PeltierDirectionControl    : in    std_logic;
-        ControlLightDiffOut        : in    unsigned(12 downto 0);
-        ControlTempDiffOut         : in    unsigned(12 downto 0)
-    );
+        Port (
+            Clock               : in    std_logic;
+            Reset               : in    std_logic;
+            Switches            : in    std_logic_vector(3 downto 0);
+            ButtonsIn           : in    std_logic_vector(3 downto 0);
+            SensorVibe          : in    std_logic;
+            SensorDoor          : in    std_logic;
+            ADCRegister         : in    ADCRegisterType;
+            LEDsOut             : out   std_logic_vector(5 downto 0);
+            SevenSegmentValue   : out   std_logic_vector(15 downto 0);
+            PWM1FanInsideValue  : out   std_logic_vector(7 downto 0);
+            PWM2FanOutsideValue : out   std_logic_vector(7 downto 0);
+            PWM3LightValue      : out   std_logic_vector(7 downto 0);
+            PWM4PeltierValue    : out   std_logic_vector(7 downto 0);
+            PeltierDirection    : out   std_logic;
+            -- Bluetooth
+            LEDsBT                : in    std_logic_vector(5 downto 0);
+            SevenSegmentValueBT   : in    std_logic_vector(15 downto 0);
+            PWM1FanInsideValueBT  : in    std_logic_vector(7 downto 0);
+            PWM2FanOutsideValueBT : in    std_logic_vector(7 downto 0);
+            PWM3LightValueBT      : in    std_logic_vector(7 downto 0);
+            PWM4PeltierValueBT    : in    std_logic_vector(7 downto 0);
+            PeltierDirectionBT    : in    std_logic;
+            -- Regelung
+            PWM1FanInsideValueControl  : in    std_logic_vector(7 downto 0);
+            PWM2FanOutsideValueControl : in    std_logic_vector(7 downto 0);
+            PWM3LightValueControl      : in    std_logic_vector(7 downto 0);
+            PWM4PeltierValueControl    : in    std_logic_vector(7 downto 0);
+            PeltierDirectionControl    : in    std_logic;
+            ControlLightDiffOut        : in    unsigned(12 downto 0);
+            ControlTempDiffOut         : in    unsigned(12 downto 0)
+        );
     end component;
 
     signal Clock               : std_logic;
@@ -79,7 +79,7 @@ architecture Behavioral of TestbenchActor is
 
 begin
 
-    UUT: component actor
+    UUT : component actor
         port map (
             Clock               => Clock,
             Reset               => Reset,
@@ -133,9 +133,9 @@ begin
     begin
 
         Clock <= '1';
-	wait for 1ns;
+        wait for 1ns;
         Clock <= '0';
-	wait for 1ns;
+        wait for 1ns;
 
     end process;
 
@@ -143,34 +143,41 @@ begin
 
         procedure PressButton0 is
         begin
+
             wait for 25ns;
             ButtonsIn <= "0001";
             wait for 25ns;
             ButtonsIn <= "0000";
+
         end procedure;
 
         procedure PressButton1 is
         begin
+
             wait for 25ns;
             ButtonsIn <= "0010";
             wait for 25ns;
             ButtonsIn <= "0000";
+
         end procedure;
 
         procedure PressButton2 is
         begin
+
             wait for 25ns;
             ButtonsIn <= "0100";
             wait for 25ns;
             ButtonsIn <= "0000";
+
         end procedure;
 
     begin
-        Reset       <= '1';
-        Switches    <= "0000";
-        ButtonsIn   <= "0000";
-        SensorVibe  <= '0';
-        SensorDoor  <= '0';
+
+        Reset      <= '1';
+        Switches   <= "0000";
+        ButtonsIn  <= "0000";
+        SensorVibe <= '0';
+        SensorDoor <= '0';
 
         ADCRegister(0) <= x"000";
         ADCRegister(1) <= x"000";
@@ -181,7 +188,7 @@ begin
         ADCRegister(6) <= x"000";
         ADCRegister(7) <= x"000";
 
-	wait for 20ns;
+        wait for 20ns;
         Reset <= '0';
 
         PressButton1;
@@ -205,7 +212,7 @@ begin
         PressButton1;
         PressButton1;
 
-	wait for 20ns;
+        wait for 20ns;
 
     end process;
 
