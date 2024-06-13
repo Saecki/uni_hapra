@@ -48,7 +48,7 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if (Reset='1') then
+            if Reset='1' then
                 -- Startwert: 0xFFFF xor (CRC-16 des verdrehten Startdelimiters)
                 CRC <= "1101001111111101";
                 -- Dieser ist notwendig, da am Mikrocontroller der CRC von Anfang an
@@ -59,11 +59,11 @@ begin
 
             -- Neue Daten annehmen, wenn diese kommen, waehrend man nicht gerade
             -- alte bearbeitet
-            elsif ((Running='0') and (NextData='1')) then
+            elsif (Running='0') and (NextData='1') then
                 Data    <= InByte;
                 Counter <= "000";
                 Running <= '1';                           -- Setzen, dass CRC-Berechnung gerade laeuft.
-            elsif (Running='1') then
+            elsif Running='1' then
                 -- Register shiften
                 CRC(15) <= CRC(14);
                 CRC(14) <= CRC(13);
@@ -84,7 +84,7 @@ begin
                 -- Bit 0,5 und 12 werden mit Bit 16 (dem alten Bit 15)
                 -- verentwederodert.
 
-                if (Counter="111") then
+                if Counter="111" then
                     Running <= '0';                       -- CRC-Berechnung fuer dieses Byte ist durch
                 end if;
                 Counter <= Counter + 1;                   -- im naechsten Takt nachstes Bit nehmen

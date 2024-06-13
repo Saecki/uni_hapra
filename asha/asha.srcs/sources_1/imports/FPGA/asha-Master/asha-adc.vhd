@@ -114,7 +114,7 @@ begin
         if rising_edge(Clock) then
             -- DEVICES_LOOP
             -- DEVICE_STATE
-            if (Reset='1') then                                                  -- Reset
+            if Reset='1' then                                                    -- Reset
                 ADCLoopState   <= s_getvalue;                                    -- Startzustand
                 ADCNumber      <= (others => '0');
                 ADCGetValue    <= '0';                                           -- Subprozesse deaktivieren
@@ -130,7 +130,7 @@ begin
 
                         ADCGetValue <= '1';                                      -- dem ADC Wertholprozess Bescheid geben
                         -- ADC_WatchDog<=ADC_WatchDog+1;-- TODO: watchdog, wir koennten das ready des externen adc ueberhoeren
-                        if (ADCValueReady='1') then                              -- wenn Wert da
+                        if ADCValueReady='1' then                                -- wenn Wert da
                             ADCGetValue    <= '0';
                             TranslateValue <= '1';                               -- als naechstes linearisieren
                             ADCLoopState   <= s_translate;
@@ -142,7 +142,7 @@ begin
                     when s_translate =>
 
                         TranslateValue <= '1';
-                        if (ADCTranslationReady='1') then
+                        if ADCTranslationReady='1' then
                             TranslateValue                     <= '0';
                             ADCRegister(to_integer(ADCNumber)) <= ADCLinearData;
                             --            if ADCNumber=x"0" then -- Innentemperatur, fÃ¼r die Regelung (Direktzugriff)
@@ -192,7 +192,7 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if (TranslateValue='0') then                                                                                                -- Reset
+            if TranslateValue='0' then                                                                                                  -- Reset
                 ADCTranslationReady        <= '0';
                 ADCTransState              <= setaddr;
                 ADCLinearData(11 downto 0) <= (others => '0');                                                                          -- TODO: unnoetig
@@ -277,7 +277,7 @@ begin
             ADCClockOld <= ADCClockIn;                          -- beides nur einen Takt unterschiedlich
 
             -- jeden Takt zuruecksetzen:
-            if (ADCGetValue='0') then                           -- Reset
+            if ADCGetValue='0' then                             -- Reset
                 -- ADC_ADDR<="000"; wird woanders angelegt
                 EnADCClock    <= '0';                           -- wenn wir den ADC nicht brauchen, brauchen wir auch kein ADCClock
                 ADCChipSelect <= '1';
@@ -289,13 +289,13 @@ begin
             -- LD6<='0';
             -- LD7<='0';
             else                                                -- kein Reset
-                if (ADCClockIn='1' and ADCClockOld='0') then    -- also: rising_edge(ADCClock)
+                if ADCClockIn='1' and ADCClockOld='0' then      -- also: rising_edge(ADCClock)
 
                     case ADCState is
 
                         when nbit =>                            -- warte auf das Nullbit als Antwort
 
-                            if (ADCReceive='0') then            -- das funzt nur, wenn an Dout des ADC ein PullUp haengt!
+                            if ADCReceive='0' then              -- das funzt nur, wenn an Dout des ADC ein PullUp haengt!
                                 ADCState <= b11;
                             end if;
 
@@ -370,7 +370,7 @@ begin
 
                     end case;
 
-                elsif (ADCClockIn='0' and ADCClockOld='1') then -- also: falling_edge(ADCClock)
+                elsif ADCClockIn='0' and ADCClockOld='1' then   -- also: falling_edge(ADCClock)
 
                     case ADCState is
 

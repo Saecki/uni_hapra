@@ -29,13 +29,13 @@ begin
         wait until rising_edge(clk);
         keyin_buf <= keyin;
 
-        if (keyin_buf=keydeb) then
+        if keyin_buf=keydeb then
             debcnt <= 0;
         else
             debcnt <= debcnt + 1;
         end if;
 
-        if (debcnt=delay) then
+        if debcnt=delay then
             keydeb <= keyin_buf;
         end if;
 

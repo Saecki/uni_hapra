@@ -59,7 +59,7 @@ begin
     IO_port : process (IO_dio, R_sda_mode, R_sda_reg) is
     begin
 
-        if (R_sda_mode = '1') then
+        if R_sda_mode = '1' then
             IO_dio <= R_sda_reg;
         else
             IO_dio <= 'Z';
@@ -70,11 +70,11 @@ begin
     counter : process (Clock, Reset) is
     begin
 
-        if rising_edge(Clock)then
-            if (Reset = '1') then
+        if rising_edge(Clock) then
+            if Reset = '1' then
                 R_scl_cnt <= "00" & x"00";
-            elsif (R_scl_en ='1') then
-                if (R_scl_cnt = 10#499#) then
+            elsif R_scl_en ='1' then
+                if R_scl_cnt = 10#499# then
                     R_scl_cnt <= "00" & x"00";
                 else
                     R_scl_cnt <= R_scl_cnt + '1';
@@ -90,9 +90,9 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if (Reset = '1') then
+            if Reset = '1' then
                 O_scl <= '1';
-            elsif (R_scl_cnt <= 10#249#) then
+            elsif R_scl_cnt <= 10#249# then
                 O_scl <= '1';
             else
                 O_scl <= '0';
@@ -105,9 +105,9 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if (Reset = '1') then
+            if Reset = '1' then
                 scl_low_mid <= '0';
-            elsif (R_scl_cnt = 10#374#) then
+            elsif R_scl_cnt = 10#374# then
                 scl_low_mid <= '1';
             else
                 scl_low_mid <= '0';
@@ -120,9 +120,9 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if (Reset = '1') then
+            if Reset = '1' then
                 scl_high_mid <= '0';
-            elsif (R_scl_cnt = 10#124#) then
+            elsif R_scl_cnt = 10#124# then
                 scl_high_mid <= '1';
             else
                 scl_high_mid <= '0';
@@ -135,9 +135,9 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if (Reset = '1') then
+            if Reset = '1' then
                 scl_neg <= '0';
-            elsif (R_scl_cnt = 10#251#) then
+            elsif R_scl_cnt = 10#251# then
                 scl_neg <= '1';
             else
                 scl_neg <= '0';
@@ -150,7 +150,7 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if (Reset = '1') then
+            if Reset = '1' then
                 R_state       <= IDLE;
                 R_sda_mode    <= '1';
                 R_sda_reg     <= '1';
@@ -228,7 +228,7 @@ begin
 
                         R_scl_en   <= '1';                                          -- open the SCL line
                         R_sda_mode <= '1';                                          -- set the DIO ouput
-                        If (scl_high_mid = '1') then
+                        If scl_high_mid = '1' then
                             R_sda_reg <= '0';                                       -- Pull the SDA signal low in the middle of SCL high level to generate the start signal
                             R_state   <= SEND;
                         else
@@ -239,8 +239,8 @@ begin
 
                         R_scl_en   <= '1';                                          -- open the SCL line
                         R_sda_mode <= '1';                                          -- set the DIO ouput
-                        if (scl_low_mid = '1') then
-                            if (R_bit_cnt =x"8") then
+                        if scl_low_mid = '1' then
+                            if R_bit_cnt =x"8" then
                                 R_bit_cnt <= x"0";
                                 R_state   <= ACK;                                   -- Enter the ACK state after the byte is sent
                             else
@@ -255,7 +255,7 @@ begin
 
                         R_scl_en   <= '1';
                         R_sda_mode <= '0';
-                        if (scl_high_mid ='1') then
+                        if scl_high_mid ='1' then
                             R_ack_flag <= IO_dio;
                             R_state    <= CHECK;
                         else
@@ -265,14 +265,15 @@ begin
                     when CHECK =>
 
                         R_scl_en <= '1';
-                        if (R_ack_flag = '0') then                                  -- Check passed
-                            if (scl_neg ='1') then
+                        if R_ack_flag = '0' then                                    -- Check passed
+                            if scl_neg ='1' then
+                                -- After reading the response signal, set the SDA signal to output and pull it low,
+                                -- because if this state is followed by a stop state,
+                                -- the rising edge of the SDA signal is required,
+                                -- so pull it low here in advance
                                 R_state    <= R_inner_state;
                                 R_sda_mode <= '1';
-                                R_sda_reg  <= '0';                                  -- After reading the response signal, set the SDA signal to output and pull it low,
-                            -- because if this state is followed by a stop state,
-                            -- the rising edge of the SDA signal is required,
-                            -- so pull it low here in advance
+                                R_sda_reg  <= '0';
                             else
                                 R_state <= CHECK;
                             end if;
@@ -284,7 +285,7 @@ begin
 
                         R_scl_en   <= '1';
                         R_sda_mode <= '1';
-                        if (scl_high_mid = '1') then
+                        if scl_high_mid = '1' then
                             R_sda_reg <= '1';
                             R_state   <= DONE;
                         else

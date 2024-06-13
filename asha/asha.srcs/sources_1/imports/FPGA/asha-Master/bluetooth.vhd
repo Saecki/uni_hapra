@@ -168,13 +168,13 @@ begin
     begin
 
         if rising_edge(ClockIn) then
-            if (PacketSent='1') then                                                                     -- ???sent,????
+            if PacketSent='1' then                                                                       -- ???sent,????
                 SendPacket    <= '0';
                 SendName      <= '0';
                 PacketDataOut <= (x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00", x"00");
             end if;
 
-            if (Reset='1') then                                                                          -- Reset von Bluetooth oder ResetButton
+            if Reset='1' then                                                                            -- Reset von Bluetooth oder ResetButton
                 CommandIn  <= (others => '0');
                 RxState    <= (others => '0');
                 PacketFull <= '0';
@@ -212,7 +212,7 @@ begin
                 -- 3??command??
                 -- 4-13?????
                 -- 14,15??CRC???
-                if (RxFin='1') then                                                                      -- ??uart????
+                if RxFin='1' then                                                                        -- ??uart????
 
                     case RxState is
 
@@ -222,14 +222,14 @@ begin
                             -- ein empfangenes Paket verloren.
                             -- (er faengt ein ein neues Paket zu empfangen,
                             -- bevor das alte fertig gesendet wurde)
-                            if (RXData="10101111") then                                                  -- 175
+                            if RXData="10101111" then                                                    -- 175
                                 RxState <= RxState + 1;
                             end if;
                             CRCInReset <= '1';
 
                         when "0001" =>                                                                   -- x"1" StartDelimiter1
 
-                            if (RXData="00000101") then                                                  -- 5
+                            if RXData="00000101" then                                                    -- 5
                                 RxState <= RxState + 1;
                             else
                                 RxState <= (others => '0');
@@ -239,8 +239,8 @@ begin
                         when "0010" =>                                                                   -- x"2" ProtokollVersion
 
                             DoCRCIn <= '1';
-                            if (RXData(7 downto 1)="0000000") then
-                                if (not (RXData(7 downto 1)="0000000")) then                             -- ?
+                            if RXData(7 downto 1)="0000000" then
+                                if not (RXData(7 downto 1)="0000000") then                               -- ?
                                     RxState <= "0000";                                                   -- Protokollversion weder 0 noch 1
                                 -- => Dieses Paket ignorieren
                                 --    und auf naechsten Delimiter warten
@@ -295,11 +295,11 @@ begin
             -- eingetroffen ist. Dabei muss darauf geachtet werden, mit der
             -- Bearbeitung erst anzufangen, wenn kein Paket mehr gesendet wird,
             -- da hier der Ausgangspuffer mit Hilfe des Eingangspuffers belegt wird.
-            if ((PacketFull='1') and (SendPacket='0')) then
+            if (PacketFull='1') and (SendPacket='0') then
                 -- Abfrage auf SendPacket: waehrend gesendet wird, darf nichts
                 -- an den Ausgangspuffern geaendert werden.
                 PacketFull <= '0';
-                if (CRCIn=CRCValueReceived) then                                                         -- CRC Korrekt, Sendung vorbereiten
+                if CRCIn=CRCValueReceived then                                                           -- CRC Korrekt, Sendung vorbereiten
 
                     case CommandIn is
 
@@ -393,7 +393,7 @@ begin
                 else                                                                                     -- CRC kaputt
                 -- wenn der CRC kaputt ist, dann wird das Paket schlicht ignoriert.
                 end if;
-            elsif ((PacketFull='1') and (SendPacket='1')) then
+            elsif (PacketFull='1') and (SendPacket='1') then
             -- Paket soll gesendet werden, aber es ist noch eins im Sendevorgang
             end if;
 
@@ -401,7 +401,7 @@ begin
             -- Sensorverarbeitung--???????????fpga??,?????
             -- Dieser Bereich wird abgearbeitet, wenn es laut asha-Protokoll
             -- ein GetDeviceValue ist--?sensor?????????
-            if (GetValue='1') then                                                                       -- ????????(??button,switch,led??)
+            if GetValue='1' then                                                                         -- ????????(??button,switch,led??)
 
                 case PacketDataOut(4) is                                                                 -- (4=DeviceNumber)
 
@@ -524,7 +524,7 @@ begin
             -- Versuch 10
             -- TODO: if ...
             -- PacketDataIn
-            if (SetValue='1') then                                                                       -- ????????(?????PWM?led?sevensegment)
+            if SetValue='1' then                                                                         -- ????????(?????PWM?led?sevensegment)
 
                 case PacketDataIn(4) is
 
@@ -599,11 +599,11 @@ begin
             DoCRCOut   <= '0';
             DoWrite    <= '0';
             PacketSent <= '0';
-            if (Reset='1') then                                            -- Reset
+            if Reset='1' then                                              -- Reset
                 DoCRCOut    <= '0';
                 CRCOutReset <= '0';
-            elsif ((SendPacket='1') and (Ready2Send='1')                   -- Bereit zum Senden
-                   and (not (GetValue='1')) and (not (SetValue='1'))) then -- und stecke nicht in der Sensorverarbeitung
+            elsif (SendPacket='1') and (Ready2Send='1')                    -- Bereit zum Senden
+                  and (not (GetValue='1')) and (not (SetValue='1')) then   -- und stecke nicht in der Sensorverarbeitung
                 -- Aktorverarbeitung
 
                 -- Die Aktor- und Sensorverarbeitung kann mehre Takte
@@ -660,12 +660,12 @@ begin
 
                     when others =>
 
-                        if (SendName='1'
+                        if SendName='1'
                             -- bei 0100 (4) und 0101 (5) werden DeviceNumber und NameOffset
                             -- uebermittelt, welche auch bei ReturnDeviceName ins
                             -- PacketDataOut an passender Stelle gesteckt wurden
-                            and (not (TxState="0100"))                     -- 4
-                            and (not (TxState="0101"))) then               -- 5
+                           and (not (TxState="0100"))                      -- 4
+                           and (not (TxState="0101")) then                 -- 5
                             TXData <= DNMemData;
                         else
                             -- fuer Zustaender (= Positionen im asha-Paket) zwischen

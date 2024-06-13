@@ -95,7 +95,7 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if (Reset='1') then
+            if Reset='1' then
                 --      RATE_DETECTED<='0';            -- variable
                 --      SignalWidth_CTR<=(others=>'0');    --
                 RATE_DETECTED         <= '1';                                     -- fix
@@ -104,7 +104,7 @@ begin
                 UNEQUAL_CTR           <= 0;
                 DETECTION_IN_PROGRESS <= '0';
             else
-                if (DETECTION_IN_PROGRESS='1') then                               -- 0->1 Flanke
+                if DETECTION_IN_PROGRESS='1' then                                 -- 0->1 Flanke
                     -- Hier endet die Messung der Signalbreite.
                     -- Wir haben die letzte Signalbreite mit SignalWidth_CTR
                     -- gemessen.
@@ -112,9 +112,9 @@ begin
                     DETECTION_IN_PROGRESS <= '0';                                 -- Ende der Messung
 
                     -- Wenn die gemessene Breite ungefaehr der bisher kleinsten entspricht
-                    if (WIDTH_REG(15 downto 1)=SignalWidth_CTR(15 downto 1)) then
+                    if WIDTH_REG(15 downto 1)=SignalWidth_CTR(15 downto 1) then
                         UNEQUAL_CTR <= 0;                                         -- dann wird der Zaehler falscher zurueckgesetzt
-                        if (EQUAL_CTR=MAX_EQCTR) then                             -- wenn genuegend kleinste gezaehlt
+                        if EQUAL_CTR=MAX_EQCTR then                               -- wenn genuegend kleinste gezaehlt
                             -- dann haben wir die uart-rate erkannt
                             RATE_DETECTED <= '1';
                         else
@@ -123,15 +123,15 @@ begin
                         end if;
                     else                                                          -- wenn breite diesmal anders
                         UNEQUAL_CTR <= UNEQUAL_CTR + 1;                           -- dann haben wir einen Ungleichen mehr
-                        if (UNEQUAL_CTR=MAX_UNEQCTR) then
+                        if UNEQUAL_CTR=MAX_UNEQCTR then
                             -- wenn zu viele Falsche, dann haben wir vielleicht mal einen
                             -- einzelnen viel zu kleinen gemessen und fangen die Messung
                             -- lieber wieder mit dem Aktuellen als Startwert von vorne an
                             WIDTH_REG   <= SignalWidth_CTR;
                             EQUAL_CTR   <= 0;
                             UNEQUAL_CTR <= 0;                                     -- TODO: ist das noetig??
-                        elsif ((SignalWidth_CTR>MIN_SIGNAL_WIDTH)
-                               and (SignalWidth_CTR<WIDTH_REG)) then
+                        elsif (SignalWidth_CTR>MIN_SIGNAL_WIDTH)
+                              and (SignalWidth_CTR<WIDTH_REG) then
                             -- wenn wir einen kleineren haben, dann moechten wir diesen
                             -- als aktuellen Vergleichswert speichern, da wir ja den
                             -- kleinsten haben wollen.
@@ -153,27 +153,27 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if ((Reset='1') or (RATE_DETECTED='0')) then            -- Reset
+            if (Reset='1') or (RATE_DETECTED='0') then              -- Reset
                 SENDING <= '0';
                 TXD     <= '1';                                     -- wenn nichts passiert, liegt an Uart-Leitungen High-Pegel
             else
-                if (SENDING='1') then
-                    if (TXD_CTR=(TXD_CTR'range=> '0')) then         -- TXD_CTR=0 , 'range ist die breite und alle 0
+                if SENDING='1' then
+                    if TXD_CTR=(TXD_CTR'range=> '0') then           -- TXD_CTR=0 , 'range ist die breite und alle 0
                         TXD_CTR <= TXD_CTR + 1;
                         TXD     <= SEND_BUF(to_integer(TXD_STATE));
-                        if (TXD_STATE=10) then
+                        if TXD_STATE=10 then
                             SENDING <= '0';
                             TXD     <= '1';
                         end if;
                         TXD_STATE <= TXD_STATE + 1;
                     -- Wenn der TXD_CTR so viel gezaehlt hat, wie die Signalbreite ist,
                     -- dann wird er auf 0 gesetzt, was obiges ausloest^^
-                    elsif (TXD_CTR=SignalWidth_CTR) then
+                    elsif TXD_CTR=SignalWidth_CTR then
                         TXD_CTR <= (others => '0');
                     else
                         TXD_CTR <= TXD_CTR + 1;
                     end if;                                         -- sending=1
-                elsif (DoWrite='1') then                            -- TODO: vielleicht besser in eigenem "if"?
+                elsif DoWrite='1' then                              -- TODO: vielleicht besser in eigenem "if"?
                     -- Wir sollen schreiben (Signal vom Hauptmodul),
                     -- hier also die Initialisierung fuer diesen Vorgang
                     SENDING <= '1';
@@ -197,7 +197,7 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if ((Reset='1') or (RATE_DETECTED='0')) then
+            if (Reset='1') or (RATE_DETECTED='0') then
                 RECEIVING_IN_PROGRESS <= '0';
                 RxFin                 <= '0';
                 START_RECEIVED        <= '0';
@@ -206,33 +206,33 @@ begin
             else
                 RXD_CTR <= RXD_CTR + 1;                                         -- mit jedem Takt den Counter erhoehen
                 RxFin   <= '0';                                                 -- mit jedem Takt RxFin auf 0 setzen
-                if (RECEIVING_IN_PROGRESS='1') then                             -- Das Startbit wurde erkannt
-                    if (START_RECEIVED='1') then                                -- Wir sind nicht mehr im Startbit
-                        if (RXD_CTR = SignalWidth_CTR) then
+                if RECEIVING_IN_PROGRESS='1' then                               -- Das Startbit wurde erkannt
+                    if START_RECEIVED='1' then                                  -- Wir sind nicht mehr im Startbit
+                        if RXD_CTR = SignalWidth_CTR then
                             RXD_CTR <= (others => '0');
                             BYTE    <= RXD & BYTE(8 downto 1);                  -- Empfang in ein Schieberegister
                         -- RXD wird hoestwertigstes, alle anderen nach rechts verschoben.
                         end if;
-                        if (BYTE(0)='1') then
+                        if BYTE(0)='1' then
                             RECEIVING_IN_PROGRESS <= '0';                       -- ... sind wir fertig mit dem Empfang
                             -- START_RECEIVED<='0'; -- unnoetig
                             DataOut <= std_logic_vector(BYTE(8 downto 1));
                         -- TODO: RxFin einen Takt verzoegern!
                         -- RxFin<='1'; -- Dem Aufrufer Bescheid geben: wir sind fertig
                         end if;
-                    elsif (RXD_CTR = '0' & SignalWidth_CTR(15 downto 1)) then   -- halbe Signalbreite (somit Signalmitte)
+                    elsif RXD_CTR = '0' & SignalWidth_CTR(15 downto 1) then     -- halbe Signalbreite (somit Signalmitte)
                         RXD_CTR        <= (others => '0');
                         START_RECEIVED <= '1';
                         BYTE           <= "100000000";                          -- Die "Starteins" (s.o.)
                     end if;
-                elsif ((RXD='0') and (START_RECEIVED='0')) then                 -- Wir empfangen noch nichts, empfangen aber eine logische 0, d.h.: jetzt kommt ein UART-Paket
+                elsif (RXD='0') and (START_RECEIVED='0') then                   -- Wir empfangen noch nichts, empfangen aber eine logische 0, d.h.: jetzt kommt ein UART-Paket
                     RXD_CTR               <= (others => '0');                   -- Zaehler zuruecksetzen
                     RECEIVING_IN_PROGRESS <= '1';                               -- Wir empfangen ein Paket
                 -- (ist schon) START_RECEIVED<='0'; -- Wir müssen das Startbit abwarten
-                elsif (START_RECEIVED='1' and (RXD_CTR = SignalWidth_CTR)) then -- Das Stopbit muss noch abgearbeitet werden
+                elsif START_RECEIVED='1' and (RXD_CTR = SignalWidth_CTR) then   -- Das Stopbit muss noch abgearbeitet werden
                     RXD_CTR        <= (others => '0');
                     START_RECEIVED <= '0';                                      -- naechstes Startbit kann erkannt werden
-                    if (RXD='1') then                                           -- Stopbit erkannt
+                    if RXD='1' then                                             -- Stopbit erkannt
                         RxFin <= '1';                                           -- Daten fertig gelesen (und DataOut muesste jetzt bereit sein)
                     end if;
                 end if;

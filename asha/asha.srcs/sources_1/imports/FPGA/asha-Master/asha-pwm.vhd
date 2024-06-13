@@ -47,29 +47,29 @@ begin
 
         if rising_edge(EnPWMClock) then
             PWMCounter := PWMCounter + 1;
-            if (PWMCounter = 255) then
+            if PWMCounter = 255 then
                 PWMCounter := "00000000";
             end if;
 
-            if (PWMCounter >= unsigned(PWM1FanInsideValue)) then
+            if PWMCounter >= unsigned(PWM1FanInsideValue) then
                 PWM1FanInsideSignal <= '1';
             else
                 PWM1FanInsideSignal <= '0';
             end if;
 
-            if (PWMCounter >= unsigned(PWM2FanOutsideValue)) then
+            if PWMCounter >= unsigned(PWM2FanOutsideValue) then
                 PWM2FanOutsideSignal <= '1';
             else
                 PWM2FanOutsideSignal <= '0';
             end if;
 
-            if (PWMCounter >= unsigned(PWM3LightValue)) then
+            if PWMCounter >= unsigned(PWM3LightValue) then
                 PWM3LightSignal <= '1';
             else
                 PWM3LightSignal <= '0';
             end if;
 
-            if (PWMCounter >= unsigned(PWM4PeltierValue)) then
+            if PWMCounter >= unsigned(PWM4PeltierValue) then
                 PWM4PeltierSignal <= '1';
             else
                 PWM4PeltierSignal <= '0';

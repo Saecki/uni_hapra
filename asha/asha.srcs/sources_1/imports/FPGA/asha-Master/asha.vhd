@@ -631,7 +631,7 @@ begin
     begin
 
         if rising_edge(Clock) then
-            if (InitialReset='1') then
+            if InitialReset='1' then
                 InitialReset <= '0';
             end if;
         end if;

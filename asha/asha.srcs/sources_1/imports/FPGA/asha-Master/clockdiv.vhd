@@ -73,7 +73,7 @@ begin
             -- In einer Softwareprogrammiersprache muesste folgende
             -- if-Abfrage _immer_ schief gehen:
             En3HzOld <= FreqChangeCounter(23);
-            if ((En3HzOld='0') and (FreqChangeCounter(23)='1')) then
+            if (En3HzOld='0') and (FreqChangeCounter(23)='1') then
                 -- hier kommt man allerdings bei einer steigenden Signalflanke
                 -- von En3Hz_CTR(23) dennoch in den Abfragekoerper, weil der
                 -- neue Wert fuer En3HzOld erst beim naechsten Takt wieder
@@ -84,21 +84,21 @@ begin
             end if;
 
             En195HzOld <= FreqChangeCounter(17);
-            if ((En195HzOld='0') and (FreqChangeCounter(17)='1')) then
+            if (En195HzOld='0') and (FreqChangeCounter(17)='1') then
                 En195Hz <= '1';
             else
                 En195Hz <= '0';
             end if;
 
             En6kHzOld <= FreqChangeCounter(12);
-            if ((En6kHzOld='0') and (FreqChangeCounter(12)='1')) then
+            if (En6kHzOld='0') and (FreqChangeCounter(12)='1') then
                 En6kHz <= '1';
             else
                 En6kHz <= '0';
             end if;
 
             EnADCClockOld <= FreqChangeCounter(8);
-            if ((EnADCClockOld='0') and (FreqChangeCounter(8)='1')) then
+            if (EnADCClockOld='0') and (FreqChangeCounter(8)='1') then
                 EnADCClock <= '1';
             else
                 EnADCClock <= '0';
@@ -117,7 +117,7 @@ begin
             --  9 =  190 Hz  PWM
             -- 11 =   48 Hz  PWM
             EnPWMClockOld2 <= FreqChangeCounter(5);
-            if ((EnPWMClockOld2='0') and (FreqChangeCounter(5)='1')) then
+            if (EnPWMClockOld2='0') and (FreqChangeCounter(5)='1') then
                 EnPWMClock2 <= '1';
             else
                 EnPWMClock2 <= '0';
@@ -126,7 +126,7 @@ begin
             -- (!) ?nderung der originalen EnPWMClock (jetzt: ENPWMClock2), da die nun
             -- langsamere Frequenz f¨¹r eine stabilere Bluetooth-Verbindung sorgt
             EnPWMClockOld <= FreqChangeCounter(11);
-            if ((EnPWMClockOld='0') and (FreqChangeCounter(11)='1')) then
+            if (EnPWMClockOld='0') and (FreqChangeCounter(11)='1') then
                 EnPWMClock <= '1';
             else
                 EnPWMClock <= '0';

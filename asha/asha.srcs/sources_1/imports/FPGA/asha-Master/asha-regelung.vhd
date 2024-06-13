@@ -36,7 +36,7 @@ begin
     lightControl : process (Clock) is
     begin
 
-        if (rising_edge(Clock)) then
+        if rising_edge(Clock) then
         -- TODO
         end if;
 
@@ -49,7 +49,7 @@ begin
     tempControl : process (EnClockTemp) is
     begin
 
-        if (rising_edge(EnClockTemp)) then
+        if rising_edge(EnClockTemp) then
         -- TODO
         end if;
 
@@ -59,7 +59,7 @@ begin
     SevenSegOutput : process (Clock) is
     begin
 
-        if (rising_edge(Clock)) then
+        if rising_edge(Clock) then
         -- TODO
         end if;
 

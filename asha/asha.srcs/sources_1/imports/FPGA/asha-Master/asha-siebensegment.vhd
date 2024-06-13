@@ -75,11 +75,11 @@ begin
             SevenSegmentValueSlow := SevenSegmentValue;
         end if;
 
-        if (Reset = '1') then
+        if Reset = '1' then
             SevenSegment <= x"00000000";
         elsif rising_edge(Clock) then
-            if (EnSevenSegmentClock = '1') then
-                if (SevenSegmentValue = x"FFFF") then                                                                         -- Zur Darstellung "ASHA" bei dem eigentlichen Wert von "FFFF"
+            if EnSevenSegmentClock = '1' then
+                if SevenSegmentValue = x"FFFF" then                                                                           -- Zur Darstellung "ASHA" bei dem eigentlichen Wert von "FFFF"
                     SevenSegment(15 downto 8)  <= b"01101101";                                                                -- S
                     SevenSegment(23 downto 16) <= b"01110110";                                                                -- H
                     SevenSegment(31 downto 24) <= b"01110111";                                                                -- A

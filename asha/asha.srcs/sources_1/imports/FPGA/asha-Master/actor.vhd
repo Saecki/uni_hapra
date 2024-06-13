@@ -78,15 +78,15 @@ begin
     begin
 
         -- Beim Reset die current Zustände auf die initialen Zustände setzen
-        if (Reset = '1') then
+        if Reset = '1' then
             current_s <= Init;
             current_m <= Asha;
         elsif rising_edge(Clock) then
-            if (ButtonsIn(0) = '0' and ButtonsIn(1) = '0') then
+            if ButtonsIn(0) = '0' and ButtonsIn(1) = '0' then
                 current_m <= next_m;
             end if;
 
-            if (ButtonsIn(2) = '0') then
+            if ButtonsIn(2) = '0' then
                 current_s <= next_s;
             end if;
         end if;
@@ -106,11 +106,11 @@ begin
 
                 -- drückt man Button 0, beginnen wir den Vorgang des Zurückschaltens,
                 -- indem in `next_m` der Zustand vorgemerkt wird
-                if (ButtonsIn(0) = '1') then
+                if ButtonsIn(0) = '1' then
                     next_m <= Bluetooth;
                 -- drückt man Button 0, beginnen wir den Vorgang des Vorwärtsschaltens,
                 -- indem in `next_m` der Zustand vorgemerkt wird
-                elsif (ButtonsIn(1) = '1') then
+                elsif ButtonsIn(1) = '1' then
                     next_m <= SensorRead;
                 else
                     next_m <= Asha;
@@ -119,9 +119,9 @@ begin
             -- Analog zum Init Zustand "Asha" sind die weiteren Zustände programmiert.
             when SensorRead =>
 
-                if (ButtonsIn(0) = '1') then
+                if ButtonsIn(0) = '1' then
                     next_m <= Asha;
-                elsif (ButtonsIn(1) = '1') then
+                elsif ButtonsIn(1) = '1' then
                     next_m <= ManualActor;
                 else
                     next_m <= SensorRead;
@@ -129,9 +129,9 @@ begin
 
             when ManualActor =>
 
-                if (ButtonsIn(0) = '1') then
+                if ButtonsIn(0) = '1' then
                     next_m <= SensorRead;
-                elsif (ButtonsIn(1) = '1') then
+                elsif ButtonsIn(1) = '1' then
                     next_m <= AutoActor;
                 else
                     next_m <= ManualActor;
@@ -139,9 +139,9 @@ begin
 
             when AutoActor =>
 
-                if (ButtonsIn(0) = '1') then
+                if ButtonsIn(0) = '1' then
                     next_m <= ManualActor;
-                elsif (ButtonsIn(1) = '1') then
+                elsif ButtonsIn(1) = '1' then
                     next_m <= Bluetooth;
                 else
                     next_m <= AutoActor;
@@ -149,9 +149,9 @@ begin
 
             when Bluetooth =>
 
-                if (ButtonsIn(0) = '1') then
+                if ButtonsIn(0) = '1' then
                     next_m <= AutoActor;
-                elsif (ButtonsIn(1) = '1') then
+                elsif ButtonsIn(1) = '1' then
                     next_m <= SensorRead;
                 else
                     next_m <= Bluetooth;
@@ -180,7 +180,7 @@ begin
                     LEDsOut                        <= b"100000";
                     SevenSegmentValue(11 downto 0) <= x"FFF";
 
-                    if (ButtonsIn(2) = '1') then
+                    if ButtonsIn(2) = '1' then
                         next_s <= Light;
                     else
                         next_s <= Init;
@@ -192,7 +192,7 @@ begin
                     -- Hier müssen die relevanten Sensordaten auf das SevenSegment geschrieben
                     SevenSegmentValue(11 downto 0) <= ADCRegister(3);
 
-                    if (ButtonsIn(2) = '1') then
+                    if ButtonsIn(2) = '1' then
                         next_s <= TempIn;
                     else
                         next_s <= Light;
@@ -203,7 +203,7 @@ begin
                     LEDsOut                        <= b"001000";
                     SevenSegmentValue(11 downto 0) <= ADCRegister(0);
 
-                    if (ButtonsIn(2) = '1') then
+                    if ButtonsIn(2) = '1' then
                         next_s <= TempOut;
                     else
                         next_s <= TempIn;
@@ -214,7 +214,7 @@ begin
                     LEDsOut                        <= b"000100";
                     SevenSegmentValue(11 downto 0) <= ADCRegister(1);
 
-                    if (ButtonsIn(2) = '1') then
+                    if ButtonsIn(2) = '1' then
                         next_s <= Vibe;
                     else
                         next_s <= TempOut;
@@ -226,7 +226,7 @@ begin
                     SevenSegmentValue(11 downto 1) <= b"00000000000";
                     SevenSegmentValue(0)           <= SensorVibe;
 
-                    if (ButtonsIn(2) = '1') then
+                    if ButtonsIn(2) = '1' then
                         next_s <= Door;
                     else
                         next_s <= Vibe;
@@ -238,7 +238,7 @@ begin
                     SevenSegmentValue(11 downto 1) <= b"00000000000";
                     SevenSegmentValue(0)           <= SensorDoor;
 
-                    if (ButtonsIn(2) = '1') then
+                    if ButtonsIn(2) = '1' then
                         next_s <= Light;
                     else
                         next_s <= Door;
@@ -273,19 +273,19 @@ begin
                 SevenSegmentValue(15 downto 12) <= x"B";
                 ReadSensors;
 
-                if (Switches(0) = '1') then
+                if Switches(0) = '1' then
                     PWM1FanInsideValue <= x"FF";
                 else
                     PWM1FanInsideValue <= x"00";
                 end if;
 
-                if (Switches(1) = '1') then
+                if Switches(1) = '1' then
                     PWM2FanOutsideValue <= x"FF";
                 else
                     PWM2FanOutsideValue <= x"00";
                 end if;
 
-                if (Switches(2) = '1') then
+                if Switches(2) = '1' then
                     PWM3LightValue <= x"FF";
                 else
                     PWM3LightValue <= x"00";
@@ -293,7 +293,7 @@ begin
 
                 PeltierDirection <= '1';
 
-                if (Switches(3) = '1') then
+                if Switches(3) = '1' then
                     PWM4PeltierValue <= x"FF";
                 else
                     PWM4PeltierValue <= x"00";

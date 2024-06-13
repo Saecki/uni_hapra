@@ -10,3 +10,6 @@ rule:
 
   type_010:
     style: allow_comment
+
+  if_002:
+    parenthesis: remove
