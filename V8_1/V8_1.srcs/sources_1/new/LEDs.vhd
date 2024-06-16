@@ -13,20 +13,20 @@ end entity leds;
 
 architecture Behavioral of leds is
 
-    signal ClockCounter : integer range 0 to 625 := 0;
     signal LedPwm    : std_logic_vector(3 downto 0) := "0001";
 
-    procedure Cycle is
+    procedure Cycle(signal LedPwm: inout std_logic_vector(3 downto 0)) is
+        variable ClockCounter : integer range 0 to 625 := 0;
     begin
 
         if ClockCounter = 625 then
-            ClockCounter <= 0;
+            ClockCounter := 0;
 
             -- Drive LEDs with 25% Duty cycle, by cycling through them.
             -- At most one LED is enabled at every time.
             LedPwm <= LedPwm(0) & LedPwm(3 downto 1);
         else
-            ClockCounter <= ClockCounter + 1;
+            ClockCounter := ClockCounter + 1;
         end if;
 
     end procedure;
@@ -38,7 +38,7 @@ begin
     begin
 
         if rising_edge(Clock) then
-            Cycle;
+            Cycle(LedPwm);
         end if;
 
     end process LedClockRising;
@@ -47,7 +47,7 @@ begin
     begin
 
         if falling_edge(Clock) then
-            Cycle;
+            Cycle(LedPwm);
         end if;
 
     end process LedClockFalling;
