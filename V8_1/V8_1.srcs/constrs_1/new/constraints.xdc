@@ -20,11 +20,8 @@ set_property IOSTANDARD LVCMOS33 [get_ports {Buttons[2]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {Buttons[1]}]
 set_property IOSTANDARD LVCMOS33 [get_ports {Buttons[0]}]
 
-set_property PACKAGE_PIN D18 [get_ports {LEDs[3]}]
-set_property PACKAGE_PIN G14 [get_ports {LEDs[2]}]
-set_property PACKAGE_PIN M15 [get_ports {LEDs[1]}]
-set_property PACKAGE_PIN M14 [get_ports {LEDs[0]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {LEDs[3]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {LEDs[2]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {LEDs[1]}]
-set_property IOSTANDARD LVCMOS33 [get_ports {LEDs[0]}]
+##Pmod Header JC
+set_property -dict { PACKAGE_PIN V15   IOSTANDARD LVCMOS33 } [get_ports { Pins[0] }]; #IO_L10P_T1_34 Sch=JC1_P
+set_property -dict { PACKAGE_PIN T11   IOSTANDARD LVCMOS33 } [get_ports { Pins[1] }]; #IO_L1P_T0_34 Sch=JC2_P
+set_property -dict { PACKAGE_PIN W14   IOSTANDARD LVCMOS33 } [get_ports { Pins[2] }]; #IO_L8P_T1_34 Sch=JC3_P
+set_property -dict { PACKAGE_PIN T12   IOSTANDARD LVCMOS33 } [get_ports { Pins[3] }]; #IO_L2P_T0_34 Sch=JC4_P
