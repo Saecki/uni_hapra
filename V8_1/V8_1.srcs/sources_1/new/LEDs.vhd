@@ -1,5 +1,6 @@
 library IEEE;
     use IEEE.STD_LOGIC_1164.ALL;
+    use IEEE.NUMERIC_STD.ALL;
 
 entity leds is
     port (
@@ -12,50 +13,61 @@ end entity leds;
 
 architecture Behavioral of leds is
 
-    signal LEDClock : std_logic := '0';
+    signal ClockCounter : integer range 0 to 625 := 0;
+    signal LEDCounter   : integer range 0 to 3   := 0;
 
-    component led_controller is
-        port (
-            LEDClock : in    std_logic;
-            Switch   : in    std_logic;
-            Button   : in    std_logic;
-            LED      : out   std_logic
-        );
-    end component;
+    procedure Increment is
+    begin
+
+        if ClockCounter = 625 then
+            ClockCounter <= 0;
+
+            if LEDCounter = 3 then
+                LEDCounter <= 0;
+            else
+                LEDCounter <= LEDCounter + 1;
+            end if;
+        else
+            ClockCounter <= ClockCounter + 1;
+        end if;
+
+    end procedure;
 
 begin
 
-    -- 125 MHz to 50 KHz
-    process (Clock) is
-
-        variable ClockCounter : integer range 0 to 1250 := 0;
-
+    -- Use 125 MHz Clock to generate LedCounter that counts from 0 to 3 with 200 KHz
+    LEDClockRising : process (Clock) is
     begin
 
         if rising_edge(Clock) then
-            if ClockCounter = 1250 then
-                ClockCounter := 0;
-                LEDClock     <= not LEDClock;
-            else
-                ClockCounter := ClockCounter + 1;
-            end if;
+            Increment;
         end if;
 
-    end process;
+    end process LEDClockRising;
 
-    Controllers : for i in 0 to 3 generate
+    LEDClockFalling : process (Clock) is
+    begin
 
-        LED_controller0 : component led_controller
-            port map (
-                LEDClock => LEDClock,
-                Switch   => Switches(i),
-                Button   => Buttons(i),
-                LED      => LEDs(i)
-            );
+        if falling_edge(Clock) then
+            Increment;
+        end if;
 
-    end generate Controllers;
+    end process LEDClockFalling;
+
+    LEDDriver : process (LEDCounter) is
+    -- Drive LEDs with 25% Duty cycle
+    begin
+
+        for i in 0 to 3 loop
+
+            if LEDCounter = i then
+                LEDs(i) <= Switches(i);
+            else
+                LEDs(i) <= '0';
+            end if;
+
+        end loop;
+
+    end process LEDDriver;
 
 end architecture Behavioral;
-
-
-
