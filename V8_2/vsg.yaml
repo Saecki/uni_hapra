@@ -1,0 +1,14 @@
+file_list:
+  - "V8_2.srcs/sources_1/new/*.vhd"
+
+rule:
+  global:
+    indent_style: spaces
+    indent_size: 4
+    case: PascalCase
+
+  type_010:
+    style: allow_comment
+
+  if_002:
+    parenthesis: remove
