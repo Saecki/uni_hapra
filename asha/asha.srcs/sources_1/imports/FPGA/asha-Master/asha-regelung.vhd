@@ -17,7 +17,7 @@ entity AshaRegelung is
         EnClockTemp                : in    std_logic;                     --! Enable-Signal fuer die Temperaturregelung
         SensordataLight            : in    std_logic_vector(11 downto 0); --! Aktuelle Lichtwerte
         SensordataTempIn           : in    std_logic_vector(11 downto 0); --! Aktuelle Innentemperatur
-        SensordataTempOut          : in    std_logic_vector(11 downto 0); --! Aktuelle AuÃentemperatur
+        SensordataTempOut          : in    std_logic_vector(11 downto 0); --! Aktuelle Außentemperatur
         PWM1FanInsideValueControl  : out   std_logic_vector(7 downto 0);  --! PWM-Wert innerere Luefter
         PWM2FanOutsideValueControl : out   std_logic_vector(7 downto 0);  --! PWM-Wert aeusserer Luefter
         PWM3LightValueControl      : out   std_logic_vector(7 downto 0);  --! PWM-Wert Licht
@@ -37,7 +37,16 @@ begin
     begin
 
         if rising_edge(Clock) then
-        -- TODO
+            -- TODO: insert pre-calculated light values
+            if unsigned(SensordataLight) < 1234 then    -- < 10 Lux
+                PWM3LightValueControl <= x"FF";
+            elsif unsigned(SensordataLight) < 1234 then -- < 50 Lux
+                PWM3LightValueControl <= x"40";
+            elsif unsigned(SensordataLight) < 1234 then -- < 200 Lux
+                PWM3LightValueControl <= x"80";
+            else
+                PWM3LightValueControl <= x"00";
+            end if;
         end if;
 
     end process lightControl;
