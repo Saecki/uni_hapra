@@ -38,11 +38,11 @@ begin
 
         if rising_edge(Clock) then
             -- TODO: insert pre-calculated light values
-            if unsigned(SensordataLight) < 1234 then    -- < 10 Lux
+            if unsigned(SensordataLight) < 4058 then    -- < 10 Lux
                 PWM3LightValueControl <= x"FF";
-            elsif unsigned(SensordataLight) < 1234 then -- < 50 Lux
+            elsif unsigned(SensordataLight) < 3912 then -- < 50 Lux
                 PWM3LightValueControl <= x"40";
-            elsif unsigned(SensordataLight) < 1234 then -- < 200 Lux
+            elsif unsigned(SensordataLight) < 3363 then -- < 200 Lux
                 PWM3LightValueControl <= x"80";
             else
                 PWM3LightValueControl <= x"00";
@@ -56,10 +56,29 @@ begin
     -- 2Â°C entsprechen einem Wert von ca. 15;
     -- um schnelles Umschalten zu verhindern, wird ein Toleranzbereich genommen
     tempControl : process (EnClockTemp) is
+    variable TempDiff: unsigned(12 downto 0);
     begin
 
         if rising_edge(EnClockTemp) then
         -- TODO
+            TempDiff := unsigned(SensorDataTempIn) - unsigned(SensorDataTempOut);
+            ControlTempDiffOut <= TempDiff;
+            if (TempDiff > 16) then -- kühlen
+                PeltierDirectionControl <= '0';
+                PWM1FanInsideValueControl <= x"FF";
+                PWM2FanOutsideValueControl <= x"FF";
+                PWM4PeltierValueControl <= x"FF";
+            elsif (TempDiff < 14) then -- heizen
+                PeltierDirectionControl <= '1';
+                PWM1FanInsideValueControl <= x"FF";
+                PWM2FanOutsideValueControl <= x"FF";
+                PWM4PeltierValueControl <= x"FF";
+            else -- abschalten
+                PeltierDirectionControl <= '1';
+                PWM1FanInsideValueControl <= x"00";
+                PWM2FanOutsideValueControl <= x"00";
+                PWM4PeltierValueControl <= x"00";
+            end if;
         end if;
 
     end process tempControl;
@@ -70,6 +89,13 @@ begin
 
         if rising_edge(Clock) then
         -- TODO
+            ControlLightDiffOut <= unsigned(SensorDataLight);
+            ControlTempDiffOut <= unsigned(SensorDataTempIn) - unsigned(SensorDataTempOut);
+            if unsigned(SensorDataTempIn) < unsigned(SensorDataTempOut) then
+                ControlTempDiffOut(12) <= '1';
+            else
+                ControlTempDiffOut(12) <= '0';
+            end if;
         end if;
 
     end process SevenSegOutput;
